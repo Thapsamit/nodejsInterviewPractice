@@ -402,7 +402,7 @@ Program Started
 - The Timers module in Node.js contains functions that execute code after a set period of time. 
   - **setTimeout():** - This function schedules code execution after the assigned amount of time ( in milliseconds ). Only after the timeout has occurred, the code will be executed. This method returns an ID that can be used in clearTimeout() method. 
   - **setImmediate()** - The setImmediate() method executes the code at the end of the current event loop cycle. The function passed in the setImmediate() argument is a function that will be executed in the next iteration of the event loop.
-  ```
+```
 // Setting timeout for the function
 setTimeout(function () {
     console.log('setTimeout() function running...');
@@ -420,8 +420,190 @@ console.log('Normal statement in the event loop');
 // Normal statement in the event loop
 // setImmediate() function running...
 // setTimeout() function running...	
+```
+- **setInterval** - The setInterval() method executes the code after the specified interval. The function is executed multiple times after the interval has passed. The function will keep on calling until the process is stopped externally or using code after specified time period. The clearInterval() method can be used to prevent the function from running.
+
+	
+# NODE.JS FILE SYSTEM
+
+## Q - 38 How Node.js read the content of a file?
+     
+- The "normal" way in Node.js is probably to read in the content of a file in a non-blocking, asynchronous way. That is, to tell Node to read in the file, and then to get a callback when the file-reading has been finished. That would allow us to hand several requests in parallel.
+```
+
+const http = require('http');
+const fs = require('fs');
+
+http.createServer(function (req, res) {
+  fs.readFile('index.html', function(err, data) {
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(data);
+    res.end();
+  });
+}).listen(3000);
+```
+        
+# NODE.JS STREAMS
+	
+## Q - 39 How many types of streams are present in node.js?
+- **Streams** - Streams are collections of data — just like arrays or strings. The difference is that streams might not be available all at once, and they don’t have to fit in memory. can send and receive data in chunks
+- Streams are objects that let you read data from a source or write data to a destination in continuous fashion.
+- There are 4 types of streams:-
+  - Readable − Stream which is used for read operation.
+  - Writable − Stream which is used for write operation.
+  - Duplex − Stream which can be used for both read and write operation.
+  - Transform − A type of duplex stream where the output is computed based on input.
+- Methods:-
+  - data − This event is fired when there is data is available to read.
+  - end − This event is fired when there is no more data to read.
+  - error − This event is fired when there is any error reading or writing data.
+  - finish − This event is fired when all the data has been flushed to underlying system.
+  
+  ## Reading:-
   ```
+  const fs = require("fs");
+  let data = "";
 
+  // Create a readable stream
+  const readerStream = fs.createReadStream("file.txt");
 
+  // Set the encoding to be utf8.
+  readerStream.setEncoding("UTF8");
+
+  // Handle stream events --> data, end, and error
+  readerStream.on("data", function (chunk) {
+  data += chunk;
+  });
+
+  readerStream.on("end", function () {
+  console.log(data);
+  });
+
+  readerStream.on("error", function (err) {
+  console.log(err.stack);
+  });      
+  ```
+  ## Writing to a Stream:
+  ```
+  const fs = require("fs");
+  const data = "File writing to a stream example";
+
+  // Create a writable stream
+  const writerStream = fs.createWriteStream("file.txt");
+
+  // Write the data to stream with encoding to be utf8
+  writerStream.write(data, "UTF8");
+
+  // Mark the end of file
+  writerStream.end();
+
+  // Handle stream events --> finish, and error
+  writerStream.on("finish", function () {
+  console.log("Write completed.");
+  });
+
+  writerStream.on("error", function (err) {
+  console.log(err.stack);
+  });
+  ```  
+        
+- Piping the Streams:
+  Piping is a mechanism where we provide the output of one stream as the input to another stream. It is normally used to get data from one stream and to pass the output of that stream to another stream. There is no limit on piping operations.   
+        
+```
+const fs = require("fs");
+
+// Create a readable stream
+const readerStream = fs.createReadStream('input.txt');
+
+// Create a writable stream
+const writerStream = fs.createWriteStream('output.txt');
+
+// Pipe the read and write operations
+// read input.txt and write data to output.txt
+readerStream.pipe(writerStream);        
+```
+- **chaining:**   
+  Chaining is a mechanism to connect the output of one stream to another stream and create a chain of multiple stream operations. It is normally used with piping operations.
+        
+```
+const fs = require("fs");
+const zlib = require('zlib');
+
+// Compress the file input.txt to input.txt.gz
+fs.createReadStream('input.txt')
+   .pipe(zlib.createGzip())
+   .pipe(fs.createWriteStream('input.txt.gz'));
+  
+console.log("File Compressed.");        
+```        
+## Q - 40 How to handle large data in Node.js?	
+- The Node.js stream feature makes it possible to process large data continuously in smaller chunks without keeping it all in memory. One benefit of using streams is that it saves time, since you don't have to wait for all the data to load before you start processing. This also makes the process less memory-intensive.
+        
+- Some of the use cases of Node.js streams include:
+  - Reading a file that's larger than the free memory space, because it's broken into smaller chunks and processed by streams. For example, a browser processes videos from streaming platforms like Netflix in small chunks, making it possible to watch videos immediately without having to download them all at once.
+
+  - Reading large log files and writing selected parts directly to another file without downloading the source file. For example, you can go through traffic records spanning multiple years to extract the busiest day in a given year and save that data to a new file.	
+	
+# NODE.JS MULTITHREADING
+        
+## Q - 41 Is Node.js entirely based on a single-thread?
+- Yes, it is true that Node.js processes all requests on a single thread. But it is just a part of the theory behind Node.js design. In fact, more than the single thread mechanism, it makes use of events and callbacks to handle a large no. of requests asynchronously.       
+- Moreover, Node.js has an optimized design which utilizes both JavaScript and C++ to guarantee maximum performance. JavaScript executes at the server-side by Google Chrome v8 engine. And the C++ lib UV library takes care of the non-sequential I/O via background workers.        
+- To explain it practically, let's assume there are 100s of requests lined up in Node.js queue. As per design, the main thread of Node.js event loop will receive all of them and forwards to background workers for execution. Once the workers finish processing requests, the registered callbacks get notified on event loop thread to pass the result back to the user.        
+        
+        
+## Q - 42 How does Node.js handle child threads?
+- Node.js is a single threaded language which in background uses multiple threads to execute asynchronous code. Node.js is non-blocking which means that all functions ( callbacks ) are delegated to the event loop and they are ( or can be ) executed by different threads. That is handled by Node.js run-time.
+
+- Nodejs Primary application runs in an event loop, which is in a single thread.
+  - Background I/O is running in a thread pool that is only accessible to C/C++ or other compiled/native modules and mostly transparent to the JS.
+  - Node v11/12 now has experimental worker_threads, which is another option.
+  - Node.js does support forking multiple processes ( which are executed on different cores ).
+  - It is important to know that state is not shared between master and forked process.
+  - We can pass messages to forked process ( which is different script ) and to master process from forked process with function send.       
+        
+        
+## Q - 43 What is fork in node JS?
+- A fork in general is used to spawn child processes. In node it is used to create a new instance of v8 engine to run multiple workers to execute the code.        
+## Q - 44 Event Loop sequence of operations:-
+- timers–>pending callbacks–>idle,prepare–>connections(poll,data,etc)–>check–>close callbacks
+        
+        
+# NODE.JS WEB MODULE
+        
+## Q - 44 How to use JSON Web Token (JWT) for authentication in Node.js?
+                
+- JSON Web Token (JWT) is an open standard that defines a compact and self-contained way of securely transmitting information between parties as a JSON object. 
+- This information can be verified and trusted because it is digitally signed        
+- There are some advantages of using JWT for authorization:
+  - Purely stateless. No additional server or infra required to store session information.
+  - It can be easily shared among services.      
+-  JWT is signed and encoded, not encrypted.        
+- 
+  ```jwt.sign(payload, secretOrPrivateKey, [options, callback])  ```   
+        
+- **Header** - Consists of two parts: the type of token (i.e., JWT) and the signing algorithm (i.e., HS512)
+        
+- **Payload** - Contains the claims that provide information about a user who has been authenticated along with other information such as token expiration time. 
+        
+- **Signature** - Final part of a token that wraps in the encoded header and payload, along with the algorithm and a secret        
+        
+- JWT is a token based stateless authentication mechanism. Since it is a client-side based stateless session, server doesn’t have to completely rely on a datastore(database) to save session information.
+        
+![alt-text](https://miro.medium.com/max/1400/1*u3a-5xZDeudKrFGcxHzLew.png)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
 

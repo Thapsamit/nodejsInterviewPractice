@@ -398,8 +398,29 @@ Program Started
 - Any asynchronous method expects one of the arguments to be a callback.
 - An asynchronous function is one where some external activity must complete before a result can be processed; it is "asynchronous" in the sense that there is an unpredictable amount of time before a result becomes available. Such functions require a callback function to handle errors and process the result.
 
+## Q - 37 What are the timing features of Node.js?
+- The Timers module in Node.js contains functions that execute code after a set period of time. 
+  - **setTimeout():** - This function schedules code execution after the assigned amount of time ( in milliseconds ). Only after the timeout has occurred, the code will be executed. This method returns an ID that can be used in clearTimeout() method. 
+  - **setImmediate()** - The setImmediate() method executes the code at the end of the current event loop cycle. The function passed in the setImmediate() argument is a function that will be executed in the next iteration of the event loop.
+  ```
+// Setting timeout for the function
+setTimeout(function () {
+    console.log('setTimeout() function running...');
+}, 500);
 
-  
+// Running this function immediately before any other
+setImmediate(function () {
+   console.log('setImmediate() function running...');
+});
+
+// Directly printing the statement
+console.log('Normal statement in the event loop');
+
+// Output
+// Normal statement in the event loop
+// setImmediate() function running...
+// setTimeout() function running...	
+  ```
 
 
 

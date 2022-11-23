@@ -239,7 +239,167 @@ example assert,http,fs,path,util etc
 
 4. Request Handler/Application: This is, generally, the application that provides the handler to be executed for registered events on resources.
 
+## Q - 26 What is Async-Await in JS?
+- The async and await keywords enable asynchronous, promise-based behavior to be written in a cleaner style, avoiding the need to explicitly configure promise chains.
+```
+const getData = async() => {
+	var data = "Hello World";
+	return data;
+}
 
+getData().then(data => console.log(data)); // returns a promise
+
+```
+- **Async:** - It simply allows us to write promises based code as if it was synchronous and it checks that we are not breaking the execution thread.It Returns a promise.
+- **Await:** - Await function is used to wait for the promise. It could be used within the async block only. It makes the code wait until the promise returns a result.
+- Await expressions make promise-returning functions behave as though they're synchronous by suspending execution until the returned promise is fulfilled or rejected.
+```
+async function getPromise(){
+  const gitUsers = await fetch('https://api.github.com/users')
+  const res = await gitUsers.json();
+  console.log("promise resolved")
+  return res;
+}
+console.log("Before")
+const gP= getPromise()
+console.log(gP.then(data=>console.log(data)))
+console.log("after")
+```
+
+## Q - 27 What are the global objects of node.js?
+- Node.js Global Objects are the objects that are available in all modules. Global Objects are built-in objects that are part of the JavaScript and can be used directly in the application without importing any particular module.
+- example:-
+  1 - **Global** - It is a global namespace. Defining a variable within this namespace makes it globally accessible.
+  2 - **process** - It is an inbuilt global object that is an instance of EventEmitter used to get information on current process.
+  3 - **console:** - It is an inbuilt global object used to print to stdout and stderr.
+  4 - **setTimeout(), clearTimeout(), setInterval(), clearInterval():** - The built-in timer functions are globals
+  5 - **__dirname:** - It is a string. It specifies the name of the directory that currently contains the code.
+  6 - **__filename:** - It specifies the filename of the code being executed.
+
+## Q - 29 What is chrome v8 engine?
+- V8 is a C++ based open-source JavaScript engine developed by Google. It was originally designed for Google Chrome and Chromium-based browsers ( such as Brave ) in 2008, but it was later utilized to create Node.js for server-side coding.
+- V8 is the JavaScript engine i.e. it parses and executes JavaScript code. The DOM, and the other Web Platform APIs ( they all makeup runtime environment ) are provided by the browser.
+- It provides a runtime environment for the execution of JavaScript code. 
+- The best part is that the JavaScript engine is completely independent of the browser in which it runs.
+- Other js engine are Rhino and SpiderMonkey.
+
+## Q - 30 How V8 compiles JavaScript code?
+- Compilation is the process of converting human-readable code to machine code. There are two ways to compile the code
+- **Using an Interpreter:** The interpreter scans the code line by line and converts it into byte code.
+- **Using a Compiler:** The Compiler scans the entire document and compiles it into highly optimized byte code.
+- The V8 engine uses both a compiler and an interpreter and follows just-in-time (JIT) compilation to speed up the execution. JIT compiling works by compiling small portions of code that are just about to be executed. This prevents long compilation time and the code being compiles is only that which is highly likely to run.
+- JIT compiles on the go 
+
+# NODE.JS EVENTS
+
+## Q - 31 What is EventEmitter in Node.js?
+- The EventEmitter is a class that facilitates communication/interaction between objects in Node.js.
+- The EventEmitter class can be used to create and handle custom events.
+- EventEmitter is at the core of Node asynchronous event-driven architecture.
+- An emitter object basically has two main features:
+  - **Emitting name events.**
+  - **Registering and unregistering listener functions.**
+```
+/**
+ * Callback Events with Parameters
+ */
+const events = require('events');
+const eventEmitter = new events.EventEmitter();
+
+function listener(code, msg) {
+   console.log(`status ${code} and ${msg}`);
+}
+
+eventEmitter.on('status', listener); // Register listener
+eventEmitter.emit('status', 200, 'ok');
+
+// Output
+status 200 and ok
+
+```
+## Q - 32 How does the EventEmitter works in Node.js?
+
+- Event Emitter emits the data in an event called message
+- A Listener is registered on the event message
+- when the message event emits some data, the listener will get the data
+![alt-text](https://github.com/learning-zone/nodejs-basics/raw/master/assets/eventEmitter_works.png)
+
+ - .emit() - this method in event emitter is to emit an event in module
+ - .on() - this method is to listen to data on a registered event in node.js
+ - .once() - it listen to data on a registered event only once., after emitting once it removes the listener for an event immedietely
+ - .addListener() - it checks if the listener is registered for an event.(alias for on),Adds a listener to the end of the listeners array for the specified event.
+ - .removeListener() - it removes the listener for an event.,Removes a listener from the listener array for the specified event.
+ - .listenerCount(type) -	Returns the number of listeners listening to the type of event.
+ - .removeAllListeners([event]) -	Removes all listeners, or those of the specified event.
+  
+ 
+## Q - 33 How Event loops works?
+- The event loop allows Node.js to perform non-blocking I/O operations despite the fact that JavaScript is single-threaded. It is done by offloading operations to the system kernel whenever possible.
+- And Ready to handle next task
+- Node.js is a single-threaded application, but it can support concurrency via the concept of event and callbacks.
+- Node thread keeps an event loop and whenever a task gets completed, it fires the corresponding event which signals the event-listener function to execute.
+  
+**Features of Event Loop:**  
+  - Event loop is an endless loop, which waits for tasks, executes them and then sleeps until it receives more tasks.
+  - The event loop executes tasks from the event queue only when the call stack is empty i.e. there is no ongoing task.
+  - The event loop allows us to use callbacks and promises.
+  - The event loop executes the tasks starting from the oldest first.
+![alt-text](https://github.com/learning-zone/nodejs-basics/raw/master/assets/nodejs-event-loop.png)  
+  
+ 
+## Q - 34 What is the difference between process.nextTick() and setImmediate()?
+- **process.nextTick() - The process.nextTick() method adds the callback function to the start of the next event queue. It is to be noted that, at the start of the program process.nextTick() method is called for the first time before the event loop is processed.
+- **setImmediate():** -  is used to execute a function right after the current event loop finishes. It is callback function is placed in the check phase of the next event queue.
+
+```
+/**
+ * setImmediate() and process.nextTick()
+ */
+setImmediate(() => {
+  console.log("1st Immediate");
+});
+
+setImmediate(() => {
+  console.log("2nd Immediate");
+});
+
+process.nextTick(() => {
+  console.log("1st Process");
+});
+
+process.nextTick(() => {
+  console.log("2nd Process");
+});
+
+// First event queue ends here
+console.log("Program Started");
+
+// Output
+Program Started
+1st Process
+2nd Process
+1st Immediate
+2nd Immediate
+
+```
+## Q - 35 What is callback function in Node.js?
+- A callback is a function which is called when a task is completed, thus helps in preventing any kind of blocking and a callback function allows other code to run in the meantime.
+- Callback is called when task get completed and is asynchronous equivalent for a function.
+- Using Callback concept, Node.js can process a large number of requests without waiting for any function to return the result which makes Node.js highly scalable.
+
+
+## Q - 36 What are the difference between Events and Callbacks?
+- **events**
+  - Node.js events module which emits named events that can cause corresponding functions or callbacks to be called. 
+  - Functions ( callbacks ) listen or subscribe to a particular event to occur and when that event triggers, all the callbacks subscribed to that event are fired one by one in order to which they were registered.
+- **callbacks** 
+  - A callback function is a function passed into another function as an argument, which is then invoked inside the outer function to complete some kind of routine or action.
+- Callback functions are called when an asynchronous function returns its result, whereas event handling works on the observer pattern. The functions that listen to events act as Observers. Whenever an event gets fired, its listener function starts executing. Node.js has multiple in-built events available through events module and EventEmitter class which are used to bind events and event-listeners
+- Any asynchronous method expects one of the arguments to be a callback.
+- An asynchronous function is one where some external activity must complete before a result can be processed; it is "asynchronous" in the sense that there is an unpredictable amount of time before a result becomes available. Such functions require a callback function to handle errors and process the result.
+
+
+  
 
 
 

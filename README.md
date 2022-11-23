@@ -572,7 +572,7 @@ console.log("File Compressed.");
         
 # NODE.JS WEB MODULE
         
-## Q - 44 How to use JSON Web Token (JWT) for authentication in Node.js?
+## Q - 45 How to use JSON Web Token (JWT) for authentication in Node.js?
                 
 - JSON Web Token (JWT) is an open standard that defines a compact and self-contained way of securely transmitting information between parties as a JSON object. 
 - This information can be verified and trusted because it is digitally signed        
@@ -593,17 +593,84 @@ console.log("File Compressed.");
         
 ![alt-text](https://miro.medium.com/max/1400/1*u3a-5xZDeudKrFGcxHzLew.png)
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+               
+# NODE.JS MIDDLEWARE
+	
+## Q - 46 What are the middleware functions in Node.js?   
+- Middleware functions are functions that have access to the request object (req), the response object (res), and the next function in the application's request-response cycle
+- Middleware functions can perform the following tasks:
+  - Execute any code.
+  - Make changes to the request and the response objects.
+  - End the request-response cycle.
+  - Call the next middleware in the stack.
+	
+- If the current middleware function does not end the request-response cycle, it must call next() to pass control to the next middleware function. Otherwise, the request will be left hanging.
+	
+## Q - 47 Explain the use of next in Node.js?
+- The next is a function in the Express router which executes the middleware succeeding the current middleware.
+- To load the middleware function, call app.use(), specifying the middleware function. For example, the following code loads the myLogger middleware function before the route to the root path (/).
+```
+/**
+ * myLogger
+ */
+const express = require("express");
+const app = express();
 
+const myLogger = function (req, res, next) {
+  console.log("LOGGED");
+  next();
+};
 
+app.use(myLogger);
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
+app.listen(3000);	
+```	
+        
+## Q - 48 Why to use Express.js?
+- Express.js is a Node.js web application framework that provides broad features for building web and mobile applications. It is used to build a single page, multipage, and hybrid web application.
+	
+**Features of Express.js:**  
+  - **Templating:** It provides templating engines to build dynamic content on the web pages by creating HTML templates on the server.	
+  - **Routing:** It refers to how an application's endpoint's URLs respond to client requests.      
+  - **Middleware:** Middleware is a request handler that has access to the application's request-response cycle.      
+  - The Express.js framework makes it very easy to develop an application which can be used to handle multiple types of requests like the GET, PUT, and POST and DELETE requests.      
+        
+## Q - 49 Why should you separate Express 'app' and 'server'?
+- Keeping the API declaration separated from the network related configuration (port, protocol, etc) allows testing the API in-process, without performing network calls,
+
+## Q - 50 Some Modules in Node.js?
+- **body-parser** - extract the entire body portion of an incoming request stream and exposes it on req.body. The body-parser module parses the JSON, buffer, string and URL encoded data submitted using HTTP POST request.
+- **Cookie** - A cookie is a piece of data that is sent to the client-side with a request and is stored on the client-side itself by the Web Browser the user is currently using.	
+	
+# REST APIS
+	
+## Q - 51 What is the difference between req.params and req.query?	
+	
+- The req.params are a part of a path in URL and they're also known as URL variables.	
+- for example, if you have the route /books/:id, then the id property will be available as req.params.id. req.params default value is an empty object {}.	
+- A req.query is a part of a URL that assigns values to specified parameters. 	
+- A query string commonly includes fields added to a base URL by a Web browser or other client application, for example as part of an HTML form. A query is the last part of URL	
+	
+## Q - 52 What is promise?
+- The Promise object represents the eventual completion (or failure) of an asynchronous operation and its resulting value.
+
+	
+## Q - 53 What is difference between put and patch?
+- In a PUT request, the enclosed entity is considered to be a modified version of the resource stored on the origin server, and the client is requesting that the stored version be replaced.	
+- With PATCH, however, the enclosed entity contains a set of instructions describing how a resource currently residing on the origin server should be modified to produce a new version.
+- Also, another difference is that when you want to update a resource with PUT request, you have to send the full payload as the request whereas with PATCH, you only send the parameters which you want to update.	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
